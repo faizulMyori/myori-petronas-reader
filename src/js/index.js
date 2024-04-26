@@ -6,13 +6,17 @@ const net = require('net');
 const client = new net.Socket();
 var isPLCConnected = false;
 var s1PLCData = false;
-
+var myTimeout
 client.on('data', (data) => {
   console.log('Received: ' + data);
   document.getElementById('plc_data').innerHTML = data.toString();
-  if (data.toString() === 's1_trigger') {
+console.log(data.toString())
+
+ myTimeout = setTimeout(sendData("s1_ng"), 2000)
+  if (data.toString() === 's1_tr') {
     s1PLCData = true;
   } else {
+	clearTimeout(myTimeout);
     s1PLCData = false;
   }
 });
@@ -20,6 +24,7 @@ client.on('data', (data) => {
 client.on('close', () => {
   isPLCConnected = false;
   document.getElementById('plc_status').innerHTML = 'Connecting...';
+startServer()
 });
 
 client.on('error', (err) => {
@@ -84,7 +89,8 @@ document.getElementById('nfc_reader1').addEventListener('change', () => {
     reader.on('card', async card => {
         const tag = card.uid;
         countNFC = countNFC + 1;
-        if (selectedAction1.find(s => s === 'read') && s1PLCData) {
+	      clearTimeout(myTimeout);
+        if (s1PLCData) {
           const data = await read(reader)
           console.log(countNFC)
           if (data) {
@@ -106,8 +112,9 @@ document.getElementById('nfc_reader1').addEventListener('change', () => {
           }
 
           s1PLCData = false
-        }
-
+        } else {
+		      sendData("s1_ng")
+	      }
         // if (selectedAction1.find(s => s === 'write')) {
         //   const data = await write(reader, "123")
         // }
@@ -138,8 +145,7 @@ document.getElementById('nfc_reader2').addEventListener('change', () => {
       reader.on('card', async card => {
         const tag = card.uid;
         countNFC = countNFC + 1;
-        if (selectedAction2.find(s => s === 'read')) {
-          const data = await read(reader)
+        const data = await read(reader)
           item6.push({
             "uid": tag,
             "data": data,
@@ -155,8 +161,8 @@ document.getElementById('nfc_reader2').addEventListener('change', () => {
             
             if (item6.length === 5) {
               sendData("s2_btjd_off")
-              setTimeout(sendData("s2_btjd_on"), 10000);
-              
+              setTimeout(sendData("s2_btjd_on"), 5000);
+              // sendData("s2_btjd_on")
               excelData.push({
                 child: item6,
                 parent: {
@@ -176,15 +182,6 @@ document.getElementById('nfc_reader2').addEventListener('change', () => {
             }, "table2")
             // sendData(s1_ng)
           }
-        }
-
-        // if (selectedAction2.find(s => s === 'write')) {
-        //   const data = await write(reader, "123")
-        // }
-
-        // if (selectedAction2.find(s => s === 'lock')) {
-        //   const data = await lock(reader)
-        // }
       });
     } else {
       remote.getCurrentWindow().reload()
@@ -202,38 +199,28 @@ document.getElementById('nfc_reader3').addEventListener('change', () => {
       const tag = card.uid;
       countNFC = countNFC + 1;
 
-      if (selectedAction2.find(s => s === 'read')) {
-        const data = await read(reader)
+      const data = await read(reader)
 
-        if (data) {
-          insertToTable({
-            "no": countNFC,
-            "uid": tag,
-            "data": data,
-            "status": "OK",
-          }, "table3")
-          excelData[excelData.length - 1].parent = {
-            "uid": tag,
-            "data": data,
-            "type": "parent"
-          }
-        } else {
-          insertToTable({
-            "no": countNFC,
-            "uid": tag,
-            "data": data,
-            "status": "ERR",
-          }, "table3")
+      if (data) {
+        insertToTable({
+          "no": countNFC,
+          "uid": tag,
+          "data": data,
+          "status": "OK",
+        }, "table3")
+        excelData[excelData.length - 1].parent = {
+          "uid": tag,
+          "data": data,
+          "type": "parent"
         }
+      } else {
+        insertToTable({
+          "no": countNFC,
+          "uid": tag,
+          "data": data,
+          "status": "ERR",
+        }, "table3")
       }
-
-      // if (selectedAction2.find(s => s === 'write')) {
-      //   const data = await write(reader, "123")
-      // }
-
-      // if (selectedAction2.find(s => s === 'lock')) {
-      //   const data = await lock(reader)
-      // }
     });
   } else {
     remote.getCurrentWindow().reload()

@@ -26,14 +26,7 @@ function createWindow () {
     }
   })
 
-  const isMac = process.platform === 'darwin'
-
-  const template = [
-    
-  ]
-
-  const menu = Menu.buildFromTemplate(template)
-  Menu.setApplicationMenu(menu)
+  
 
 
   win.loadFile(path.join(__dirname, 'index.html'))
