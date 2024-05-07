@@ -5,19 +5,19 @@ import { read } from './utils/myori-reader.js';
 const net = require('net');
 const client = new net.Socket();
 var isPLCConnected = false;
-var s1PLCData = false;
+// var s1PLCData = false;
 var myTimeout
 client.on('data', (data) => {
   console.log('Received: ' + data);
   document.getElementById('plc_data').innerHTML = data.toString();
 
   myTimeout = setTimeout(sendData("s1_ng"), 1150)
-  if (data.toString() === 's1_tr') {
-    s1PLCData = true;
-  } else {
-	clearTimeout(myTimeout);
-    s1PLCData = false;
-  }
+  // if (data.toString() === 's1_tr') {
+  //   s1PLCData = true;
+  // } else {
+	// clearTimeout(myTimeout);
+  //   s1PLCData = false;
+  // }
 });
 
 client.on('close', () => {
@@ -86,7 +86,7 @@ document.getElementById('nfc_reader1').addEventListener('change', () => {
         const tag = card.uid;
         countNFC = countNFC + 1;
 	      clearTimeout(myTimeout);
-        if (s1PLCData) {
+        // if (s1PLCData) {
           // const data = await read(reader)
           insertToTable({
             "no": countNFC,
@@ -111,7 +111,7 @@ document.getElementById('nfc_reader1').addEventListener('change', () => {
               }
             })
             item6 = [];
-          }
+          // }
 
           sendData("s1_ok")
           // if (data) {
@@ -151,7 +151,7 @@ document.getElementById('nfc_reader1').addEventListener('change', () => {
           //   sendData("s1_ng")
           // }
 
-          s1PLCData = false
+          // s1PLCData = false
         } else {
 		      sendData("s1_ng")
 	      }
