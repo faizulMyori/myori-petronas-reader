@@ -10,9 +10,8 @@ var myTimeout
 client.on('data', (data) => {
   console.log('Received: ' + data);
   document.getElementById('plc_data').innerHTML = data.toString();
-console.log(data.toString())
 
- myTimeout = setTimeout(sendData("s1_ng"), 2000)
+  myTimeout = setTimeout(sendData("s1_ng"), 1150)
   if (data.toString() === 's1_tr') {
     s1PLCData = true;
   } else {
@@ -88,44 +87,69 @@ document.getElementById('nfc_reader1').addEventListener('change', () => {
         countNFC = countNFC + 1;
 	      clearTimeout(myTimeout);
         if (s1PLCData) {
-          const data = await read(reader)
+          // const data = await read(reader)
+          insertToTable({
+            "no": countNFC,
+            "uid": tag,
+            "data": "",
+            "status": "OK",
+          }, "table1")
 
-          if (data) {
-            insertToTable({
-              "no": countNFC,
-              "uid": tag,
-              "data": data,
-              "status": "OK",
-            }, "table1")
+          item6.push({
+            "uid": tag,
+            "data": "",
+            "type": "child"
+          })
 
-            item6.push({
-              "uid": tag,
-              "data": data,
-              "type": "child"
+          if (item6.length === 5) {
+            excelData.push({
+              child: item6,
+              parent: {
+                "uid": "",
+                "data": "",
+                "type": "parent"
+              }
             })
-
-            if (item6.length === 5) {
-              excelData.push({
-                child: item6,
-                parent: {
-                  "uid": "",
-                  "data": "",
-                  "type": "parent"
-                }
-              })
-              item6 = [];
-            }
-
-            sendData("s1_ok")
-          } else {
-            insertToTable({
-              "no": countNFC,
-              "uid": tag,
-              "data": data,
-              "status": "ERR",
-            }, "table1")
-            sendData("s1_ng")
+            item6 = [];
           }
+
+          sendData("s1_ok")
+          // if (data) {
+          //   insertToTable({
+          //     "no": countNFC,
+          //     "uid": tag,
+          //     "data": data,
+          //     "status": "OK",
+          //   }, "table1")
+
+          //   item6.push({
+          //     "uid": tag,
+          //     "data": data,
+          //     "type": "child"
+          //   })
+
+          //   if (item6.length === 5) {
+          //     excelData.push({
+          //       child: item6,
+          //       parent: {
+          //         "uid": "",
+          //         "data": "",
+          //         "type": "parent"
+          //       }
+          //     })
+          //     item6 = [];
+          //   }
+
+          //   sendData("s1_ok")
+          // } else {
+          //   insertToTable({
+          //     "no": countNFC,
+          //     "uid": tag,
+          //     "data": data,
+          //     "status": "ERR",
+          //   }, "table1")
+          //   sendData("s1_ng")
+          // }
 
           s1PLCData = false
         } else {
@@ -147,28 +171,42 @@ document.getElementById('nfc_reader2').addEventListener('change', () => {
       reader.on('card', async card => {
         const tag = card.uid;
         countNFC = countNFC + 1;
-        const data = await read(reader)
-        if (data) {
-          insertToTable({
-            "no": countNFC,
-            "uid": tag,
-            "data": data,
-            "status": "OK",
-          }, "table2")
 
-          excelData[countNFC - 1].parent = {
-            "uid": tag,
-            "data": data,
-            "type": "parent"
-          }
-        } else {
-          insertToTable({
-            "no": countNFC,
-            "uid": tag,
-            "data": data,
-            "status": "ERR",
-          }, "table2")
+        insertToTable({
+          "no": countNFC,
+          "uid": tag,
+          "data": "",
+          "status": "OK",
+        }, "table2")
+
+        excelData[countNFC - 1].parent = {
+          "uid": tag,
+          "data": "",
+          "type": "parent"
         }
+
+        // const data = await read(reader)
+        // if (data) {
+        //   insertToTable({
+        //     "no": countNFC,
+        //     "uid": tag,
+        //     "data": data,
+        //     "status": "OK",
+        //   }, "table2")
+
+        //   excelData[countNFC - 1].parent = {
+        //     "uid": tag,
+        //     "data": data,
+        //     "type": "parent"
+        //   }
+        // } else {
+        //   insertToTable({
+        //     "no": countNFC,
+        //     "uid": tag,
+        //     "data": data,
+        //     "status": "ERR",
+        //   }, "table2")
+        // }
       });
     } else {
       remote.getCurrentWindow().reload()
