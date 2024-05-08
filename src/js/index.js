@@ -6,18 +6,9 @@ const net = require('net');
 const client = new net.Socket();
 var isPLCConnected = false;
 // var s1PLCData = false;
-var myTimeout
+// var myTimeout
 client.on('data', (data) => {
-  console.log('Received: ' + data);
   document.getElementById('plc_data').innerHTML = data.toString();
-
-  myTimeout = setTimeout(sendData("s1_ng"), 1150)
-  // if (data.toString() === 's1_tr') {
-  //   s1PLCData = true;
-  // } else {
-	// clearTimeout(myTimeout);
-  //   s1PLCData = false;
-  // }
 });
 
 client.on('close', () => {
@@ -41,7 +32,8 @@ const startServer = () => {
 };
 
 const sendData = (message) => {
-  client.write(message);
+  console.log(message)
+  // client.write(message);
 };
 
 startServer();
@@ -85,81 +77,44 @@ document.getElementById('nfc_reader1').addEventListener('change', () => {
     reader.on('card', async card => {
         const tag = card.uid;
         countNFC = countNFC + 1;
-	      clearTimeout(myTimeout);
-        // if (s1PLCData) {
-          // const data = await read(reader)
-          insertToTable({
-            "no": countNFC,
-            "uid": tag,
-            "data": "",
-            "status": "OK",
-          }, "table1")
+	      // clearTimeout(myTimeout);
+        insertToTable({
+          "no": countNFC,
+          "uid": tag,
+          "data": "",
+          "status": "OK",
+        }, "table1")
 
-          item6.push({
-            "uid": tag,
-            "data": "",
-            "type": "child"
+        item6.push({
+          "uid": tag,
+          "data": "",
+          "type": "child"
+        })
+
+        if (item6.length === 5) {
+          excelData.push({
+            child: item6,
+            parent: {
+              "uid": "",
+              "data": "",
+              "type": "parent"
+            }
           })
+          item6 = [];
+        }
 
-          if (item6.length === 5) {
-            excelData.push({
-              child: item6,
-              parent: {
-                "uid": "",
-                "data": "",
-                "type": "parent"
-              }
-            })
-            item6 = [];
-          // }
+        sendData("s1_ok")
 
-          sendData("s1_ok")
-          // if (data) {
-          //   insertToTable({
-          //     "no": countNFC,
-          //     "uid": tag,
-          //     "data": data,
-          //     "status": "OK",
-          //   }, "table1")
-
-          //   item6.push({
-          //     "uid": tag,
-          //     "data": data,
-          //     "type": "child"
-          //   })
-
-          //   if (item6.length === 5) {
-          //     excelData.push({
-          //       child: item6,
-          //       parent: {
-          //         "uid": "",
-          //         "data": "",
-          //         "type": "parent"
-          //       }
-          //     })
-          //     item6 = [];
-          //   }
-
-          //   sendData("s1_ok")
-          // } else {
-          //   insertToTable({
-          //     "no": countNFC,
-          //     "uid": tag,
-          //     "data": data,
-          //     "status": "ERR",
-          //   }, "table1")
-          //   sendData("s1_ng")
-          // }
-
-          // s1PLCData = false
-        } else {
-		      sendData("s1_ng")
-	      }
+        setTimeout(timeout, 1000)
     });
   } else {
     remote.getCurrentWindow().reload()
   }
 })
+
+function timeout() {
+  return sendData("s1_ng")
+}
 
 document.getElementById('nfc_reader2').addEventListener('change', () => {
     var selectedDevice = document.getElementById('nfc_reader2').value;
