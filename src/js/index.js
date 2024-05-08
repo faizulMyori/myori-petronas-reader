@@ -6,7 +6,7 @@ const net = require('net');
 const client = new net.Socket();
 var isPLCConnected = false;
 // var s1PLCData = false;
-// var myTimeout
+var timer = 1000;
 client.on('data', (data) => {
   document.getElementById('plc_data').innerHTML = data.toString();
 });
@@ -40,6 +40,10 @@ startServer();
 
 document.getElementById('submitPlc').addEventListener('click', () => {
   sendData(document.getElementById('writeToPLC').value);
+})
+
+document.getElementById('setTimerBtn').addEventListener('click', () => {
+  timer = document.getElementById('setTimer').value
 })
 
 // NFC Function
@@ -105,7 +109,7 @@ document.getElementById('nfc_reader1').addEventListener('change', () => {
 
         sendData("s1_ok")
 
-        setTimeout(timeout, 1000)
+        setTimeout(timeout, timer)
     });
   } else {
     remote.getCurrentWindow().reload()
