@@ -5,10 +5,19 @@ import { read } from './utils/myori-reader.js';
 const net = require('net');
 const client = new net.Socket();
 var isPLCConnected = false;
-// var s1PLCData = false;
-var timer = 1000;
+var s1PLCData = false;
+var timer = 500;
+var myTimeout
+
 client.on('data', (data) => {
   document.getElementById('plc_data').innerHTML = data.toString();
+  setTimeout(timeout, timer)
+  if (data.toString() === 's1_tr') {
+    s1PLCData = true;
+  } else {
+	  clearTimeout(myTimeout);
+    s1PLCData = false;
+  }
 });
 
 client.on('close', () => {
@@ -32,8 +41,7 @@ const startServer = () => {
 };
 
 const sendData = (message) => {
-  console.log(message)
-  // client.write(message);
+  client.write(message);
 };
 
 startServer();
@@ -81,35 +89,38 @@ document.getElementById('nfc_reader1').addEventListener('change', () => {
     reader.on('card', async card => {
         const tag = card.uid;
         countNFC = countNFC + 1;
-	      // clearTimeout(myTimeout);
-        insertToTable({
-          "no": countNFC,
-          "uid": tag,
-          "data": "",
-          "status": "OK",
-        }, "table1")
+	      clearTimeout(myTimeout);
+        if (s1PLCData) {
+          insertToTable({
+            "no": countNFC,
+            "uid": tag,
+            "data": "",
+            "status": "OK",
+          }, "table1")
 
-        item6.push({
-          "uid": tag,
-          "data": "",
-          "type": "child"
-        })
-
-        if (item6.length === 5) {
-          excelData.push({
-            child: item6,
-            parent: {
-              "uid": "",
-              "data": "",
-              "type": "parent"
-            }
+          item6.push({
+            "uid": tag,
+            "data": "",
+            "type": "child"
           })
-          item6 = [];
+
+          if (item6.length === 6) {
+            excelData.push({
+              child: item6,
+              parent: {
+                "uid": "",
+                "data": "",
+                "type": "parent"
+              }
+            })
+            item6 = [];
+          }
+
+          sendData("s1_ok")
+          s1PLCData = false
+        } else {
+          sendData("s1_ng")
         }
-
-        sendData("s1_ok")
-
-        setTimeout(timeout, timer)
     });
   } else {
     remote.getCurrentWindow().reload()
@@ -131,41 +142,32 @@ document.getElementById('nfc_reader2').addEventListener('change', () => {
         const tag = card.uid;
         countNFC = countNFC + 1;
 
-        insertToTable({
-          "no": countNFC,
-          "uid": tag,
-          "data": "",
-          "status": "OK",
-        }, "table2")
+          insertToTable({
+            "no": countNFC,
+            "uid": tag,
+            "data": "",
+            "status": "OK",
+          }, "table2")
 
-        excelData[countNFC - 1].parent = {
-          "uid": tag,
-          "data": "",
-          "type": "parent"
-        }
+          excelData[countNFC - 1].parent = {
+            "uid": tag,
+            "data": "",
+            "type": "parent"
+          }
 
-        // const data = await read(reader)
-        // if (data) {
-        //   insertToTable({
-        //     "no": countNFC,
-        //     "uid": tag,
-        //     "data": data,
-        //     "status": "OK",
-        //   }, "table2")
+          insertToTableResult({
+            "uid": tag,
+            "data": "",
+            "type": "parent"
+          }, "table3")
 
-        //   excelData[countNFC - 1].parent = {
-        //     "uid": tag,
-        //     "data": data,
-        //     "type": "parent"
-        //   }
-        // } else {
-        //   insertToTable({
-        //     "no": countNFC,
-        //     "uid": tag,
-        //     "data": data,
-        //     "status": "ERR",
-        //   }, "table2")
-        // }
+          excelData[countNFC - 1].child.forEach(e => {
+            insertToTableResult({
+              "uid": e.uid,
+              "data": e.data,
+              "type": "child"
+            }, "table3")
+          })
       });
     } else {
       remote.getCurrentWindow().reload()
@@ -210,6 +212,18 @@ function processData(data) {
   })
 
   return combinedData;
+}
+
+function insertToTableResult(data, tableID){
+  var table = document.getElementById(tableID);
+  
+  var row = table.insertRow(0);
+
+  var cell1 = row.insertCell(0);
+  var cell2 = row.insertCell(1);
+
+  cell1.innerHTML = data.uid;
+  cell2.innerHTML = data.type;
 }
 
 function insertToTable(data, tableID){

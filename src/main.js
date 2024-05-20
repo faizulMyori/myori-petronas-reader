@@ -15,19 +15,20 @@ if (env === 'development') {
 
 function createWindow () {
   const win = new BrowserWindow({
-    width: 1000,
-    height: 550,
+    width: 1920,
+    height: 1080,
     icon: path.join(__dirname, '/assets/img/icons/win/icon.ico'),
-    resizable: false,
+    maximizable: true,
+    minHeight: 1080,
+    minWidth: 1920,
+    maxWidth: 1920,
+    maxHeight: 1080,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
       preload: path.join(__dirname, '/js/preload.js')
     }
   })
-
-  
-
 
   win.loadFile(path.join(__dirname, 'index.html'))
 }

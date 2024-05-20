@@ -16,103 +16,122 @@
             height: 100%;
         }
         .table-wrap {
-            height: 120px;
+            height: 550px;
             overflow-y: auto;
         }
         .tableFixHead thead th { position: sticky; top: 0; z-index: 1; }
     </style>
 </head>
 <body>
-    <div class="container" style="height: 100%; padding-top:5px; padding-bottom:5px;">
-        <div class="row" style="height: 50%;">
-            <div class="col-6" style="width: 100%; border: solid black 1px;">
-                <div class="row">
-                    <div class="col-6">
-                        <label><b>NFC Reader 1</b></label>
-                        <select name="nfc_reader1"  id="nfc_reader1" class="form-control nfc_list">
-                            <option value="">Please Select</option>
-                        </select>
-                    </div>
-                </div>
-                <br>
-                <div class="row">
-                    <div class="col-12 table-wrap tableFixHead">
-                        <table class="table table-sm" style="width: 100%;">
-                            <thead class="thead-dark">
-                                <tr>
-                                    <th>No</th>
-                                    <th>Tag</th>
-                                    <th>Serial</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="table1"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6" style="width: 100%; border: solid black 1px;">
-                <div class="row">
-                    <div class="col-6">
-                        <label><b>NFC Reader 2</b></label>
-                        <select name="nfc_reader2"  id="nfc_reader2" class="form-control nfc_list">
-                            <option value="">Please Select</option>
-                        </select>
-                    </div>
-                </div>
-                <br>
-                <div class="row">
-                    <div class="col-12 table-wrap tableFixHead">
-                        <table class="table table-sm" style="width: 100%;">
-                            <thead class="thead-dark">
-                                <tr>
-                                    <th>No</th>
-                                    <th>Tag</th>
-                                    <th>Serial</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="table2"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row" style="height: 50%;">
-            <div class="col-12" style="width: 100%; border: solid black 1px;">
-                <div class="row" style="padding-top:5px; padding-left:5px;">
-                    <div class="col-12">
-                        <label><b>Action Panel</b></label>
-                    </div>
-                </div>
-                <div class="row" style="padding-left:5px;">
-                    <div class="col-6" style="border-right: 1px solid black;">
-                        PLC Status: <span id="plc_status" style="color: red;">Connecting...</span>
+    <div class="container-fluid" style="height: 100%; width: 100%;">
+        <div class="row" style="height: 100%;">
+            <div class="col-8">
+                <div class="row" style="height: 70%;">
+                    <div class="col-6" style="width: 100%; border: solid black 1px;">
+                        <div class="row">
+                            <div class="col-6">
+                                <label><b>NFC Reader 1</b></label>
+                                <select name="nfc_reader1"  id="nfc_reader1" class="form-control nfc_list">
+                                    <option value="">Please Select</option>
+                                </select>
+                            </div>
+                        </div>
                         <br>
-                        PLC Data: <span id="plc_data" style="color: red;">...</span>
-                        <hr>
                         <div class="row">
-                            <div class="col-12">
-                                <label>Write to PLC</label>
-                                <input type="text" class="form-control" id="writeToPLC" placeholder="Data">
-                                <button type="button" id="submitPlc"  style="margin-top: 5px; width: 100%;" class="btn btn-primary">Write</button>
+                            <div class="col-12 table-wrap tableFixHead">
+                                <table class="table table-sm" style="width: 100%;">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Tag</th>
+                                            <th>Serial</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="table1"></tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
-                    <div class="col-6">
+                    <div class="col-6" style="width: 100%; border: solid black 1px;">
                         <div class="row">
-                            <div class="col-12">
-                                <label>MyOri Actions</label>
-                                <button type="button" id="downloadExcel" style="margin-top: 5px; width: 100%;" class="btn btn-secondary">Download Excel</button>
+                            <div class="col-6">
+                                <label><b>NFC Reader 2</b></label>
+                                <select name="nfc_reader2"  id="nfc_reader2" class="form-control nfc_list">
+                                    <option value="">Please Select</option>
+                                </select>
                             </div>
                         </div>
-                        <hr>
+                        <br>
                         <div class="row">
-                            <div class="col-12">
-                                <input type="text" class="form-control" id="setTimer" value="1000">
-                                <button type="button" id="setTimerBtn"  style="margin-top: 5px; width: 100%;" class="btn btn-primary">Set Timer (ms)</button>
+                            <div class="col-12 table-wrap tableFixHead">
+                                <table class="table table-sm" style="width: 100%;">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Tag</th>
+                                            <th>Serial</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="table2"></tbody>
+                                </table>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <div class="row" style="height: 30%;">
+                    <div class="col-12" style="width: 100%; border: solid black 1px;">
+                        <div class="row" style="padding-top:5px; padding-left:5px;">
+                            <div class="col-12">
+                                <label><b>Action Panel</b></label>
+                            </div>
+                        </div>
+                        <div class="row" style="padding-left:5px;">
+                            <div class="col-6" style="border-right: 1px solid black;">
+                                PLC Status: <span id="plc_status" style="color: red;">Connecting...</span>
+                                <br>
+                                PLC Data: <span id="plc_data" style="color: red;">...</span>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label>Write to PLC</label>
+                                        <input type="text" class="form-control" id="writeToPLC" placeholder="Data">
+                                        <button type="button" id="submitPlc"  style="margin-top: 5px; width: 100%;" class="btn btn-primary">Write</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label>MyOri Actions</label>
+                                        <button type="button" id="downloadExcel" style="margin-top: 5px; width: 100%;" class="btn btn-secondary">Download Excel</button>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <input type="text" class="form-control" id="setTimer" value="500">
+                                        <button type="button" id="setTimerBtn"  style="margin-top: 5px; width: 100%;" class="btn btn-primary">Set Timer (ms)</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-12 tableFixHead">
+                        <table class="table table-sm" style="width: 100%;">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Tag</th>
+                                    <th>Type</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table3"></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
